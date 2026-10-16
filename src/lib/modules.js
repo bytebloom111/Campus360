@@ -4,7 +4,7 @@ export const MODULES = [
   { path: '/focus', label: 'Focus timer', icon: 'timer', group: 'Study', built: false },
   { path: '/library', label: 'Library', icon: 'book', group: 'Study', built: false },
   { path: '/pyq', label: 'PYQs', icon: 'file', group: 'Study', built: false },
-  { path: '/calendar', label: 'Calendar and events', icon: 'cal', group: 'Campus', built: false },
+  { path: '/calendar', label: 'Calendar and events', icon: 'cal', group: 'Campus', built: true },
   { path: '/map', label: 'Who to contact', icon: 'pin', group: 'Campus', built: false },
   { path: '/rides', label: 'Rides', icon: 'car', group: 'Campus', built: false },
   { path: '/challenges', label: 'Challenges', icon: 'cup', group: 'Community', built: false },

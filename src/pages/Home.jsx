@@ -3,6 +3,12 @@ import { useApp } from '../context/app-context'
 import { useLocalStorage } from '../lib/storage'
 import { MODULES, GROUPS } from '../lib/modules'
 import { DEFAULT_PLANNER, sgpa, gradeStatus } from '../lib/planner'
+import { useNow } from '../lib/useNow'
+import { EVENTS, rankEvents, eventState } from '../lib/events'
+import { useRegistrations } from '../lib/useRegistrations'
+import { useDeadlines } from '../lib/useDeadlines'
+import { daysAway, away } from '../lib/deadlines'
+import EventPoster from '../components/EventPoster'
 import Icon from '../components/Icon'
 import { Badge } from '../components/ui'
 
@@ -17,6 +23,19 @@ export default function Home() {
   const { profile, session } = useApp()
   const [plan] = useLocalStorage(`c360.planner.${session.phone}`, DEFAULT_PLANNER)
   const { subjects, scale, whatIf } = plan
+  const now = useNow()
+  const [reg, toggleReg] = useRegistrations(session.phone)
+  const [deadlines] = useDeadlines(session.phone)
+
+  // The nearest upcoming deadline from the calendar.
+  const nextDeadline = deadlines
+    .map((d) => ({ ...d, off: daysAway(d.date) }))
+    .filter((d) => d.off >= 0)
+    .sort((a, b) => a.off - b.off)[0]
+  // Up to three live or upcoming events, interest matches first.
+  const posters = rankEvents(EVENTS, profile.interests || [], now)
+    .filter((e) => eventState(e, now) !== 'ended')
+    .slice(0, 3)
 
   const first = profile.name.split(' ')[0]
   const initials = profile.name
@@ -81,6 +100,23 @@ export default function Home() {
         ))}
       </div>
 
+      {nextDeadline && (
+        <div className="mb-3 flex items-center justify-between gap-3 rounded-3xl bg-ink px-[18px] py-4 text-white shadow-[0_12px_30px_rgba(22,24,29,0.2)]">
+          <div>
+            <b>{nextDeadline.title}</b>
+            <div className="text-[12.5px] text-[#c3c8d4]">
+              {away(nextDeadline.off)}. {nextDeadline.note}
+            </div>
+          </div>
+          <Link
+            to="/calendar"
+            className="flex-none whitespace-nowrap rounded-2xl bg-white px-4 py-[9px] font-medium text-ink no-underline"
+          >
+            Open calendar
+          </Link>
+        </div>
+      )}
+
       {weak && (
         <div className="mb-3 flex items-center justify-between gap-3 rounded-3xl bg-ink px-[18px] py-4 text-white shadow-[0_12px_30px_rgba(22,24,29,0.2)]">
           <div>
@@ -94,6 +130,26 @@ export default function Home() {
             Open planner
           </Link>
         </div>
+      )}
+
+      {posters.length > 0 && (
+        <>
+          <h2 className="mx-1 mb-2 mt-4 text-[11px] font-medium uppercase tracking-[0.12em] text-mute">
+            Happening on campus
+          </h2>
+          <div className="mb-3 flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none]">
+            {posters.map((e) => (
+              <EventPoster
+                key={e.id}
+                e={e}
+                now={now}
+                interests={profile.interests || []}
+                registered={reg.includes(e.id)}
+                onToggle={() => toggleReg(e.id)}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {GROUPS.map((g) => (
