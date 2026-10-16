@@ -1,6 +1,6 @@
 // Every module of the app. Set built: true when a module is finished.
 export const MODULES = [
-  { path: '/planner', label: 'Planner', icon: 'plan', group: 'Study', built: false },
+  { path: '/planner', label: 'Planner', icon: 'plan', group: 'Study', built: true },
   { path: '/focus', label: 'Focus timer', icon: 'timer', group: 'Study', built: false },
   { path: '/library', label: 'Library', icon: 'book', group: 'Study', built: false },
   { path: '/pyq', label: 'PYQs', icon: 'file', group: 'Study', built: false },

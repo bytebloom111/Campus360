@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Setup from './pages/Setup'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
+import Planner from './pages/Planner'
 import ComingSoon from './pages/ComingSoon'
 import { MODULES } from './lib/modules'
 
@@ -17,7 +18,8 @@ export default function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
-          {MODULES.map((m) => (
+          <Route path="/planner" element={<Planner />} />
+          {MODULES.filter((m) => !m.built).map((m) => (
             <Route key={m.path} path={m.path} element={<ComingSoon title={m.label} />} />
           ))}
         </Route>
