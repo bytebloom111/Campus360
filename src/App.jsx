@@ -7,8 +7,13 @@ import Home from './pages/Home'
 import Profile from './pages/Profile'
 import Planner from './pages/Planner'
 import Calendar from './pages/Calendar'
-import ComingSoon from './pages/ComingSoon'
-import { MODULES } from './lib/modules'
+import Focus from './pages/Focus'
+import Library from './pages/Library'
+import Pyq from './pages/Pyq'
+import Contacts from './pages/Contacts'
+import Rides from './pages/Rides'
+import Challenges from './pages/Challenges'
+import Peer from './pages/Peer'
 
 export default function App() {
   return (
@@ -21,9 +26,13 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/planner" element={<Planner />} />
           <Route path="/calendar" element={<Calendar />} />
-          {MODULES.filter((m) => !m.built).map((m) => (
-            <Route key={m.path} path={m.path} element={<ComingSoon title={m.label} />} />
-          ))}
+          <Route path="/focus" element={<Focus />} />
+          <Route path="/library" element={<Library />} />
+          <Route path="/pyq" element={<Pyq />} />
+          <Route path="/map" element={<Contacts />} />
+          <Route path="/rides" element={<Rides />} />
+          <Route path="/challenges" element={<Challenges />} />
+          <Route path="/peer" element={<Peer />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

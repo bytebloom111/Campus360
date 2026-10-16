@@ -7,6 +7,8 @@ import { useNow } from '../lib/useNow'
 import { EVENTS, rankEvents, eventState } from '../lib/events'
 import { useRegistrations } from '../lib/useRegistrations'
 import { useDeadlines } from '../lib/useDeadlines'
+import { useChallenges } from '../lib/challenges'
+import { usePeer } from '../lib/credits'
 import { daysAway, away } from '../lib/deadlines'
 import EventPoster from '../components/EventPoster'
 import Icon from '../components/Icon'
@@ -26,6 +28,8 @@ export default function Home() {
   const now = useNow()
   const [reg, toggleReg] = useRegistrations(session.phone)
   const [deadlines] = useDeadlines(session.phone)
+  const { rank } = useChallenges(session.phone, profile)
+  const [peer] = usePeer(session.phone)
 
   // The nearest upcoming deadline from the calendar.
   const nextDeadline = deadlines
@@ -68,8 +72,8 @@ export default function Home() {
 
   const stats = [
     { label: 'SGPA', value: projected.toFixed(1), note: 'projected', bg: 'bg-[linear-gradient(160deg,#f1e4ff,#fbd3ea)]' },
-    { label: 'Credits', value: '2', note: 'time credits', bg: 'bg-[linear-gradient(160deg,#c4f3fb,#93d6f5)]' },
-    { label: 'Rank', value: '-', note: 'in challenges', bg: 'border border-line bg-white' },
+    { label: 'Credits', value: String(peer.credits), note: 'time credits', bg: 'bg-[linear-gradient(160deg,#c4f3fb,#93d6f5)]' },
+    { label: 'Rank', value: rank ? `#${rank}` : '-', note: 'in challenges', bg: 'border border-line bg-white' },
   ]
 
   return (
