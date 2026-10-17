@@ -14,12 +14,14 @@ import Contacts from './pages/Contacts'
 import Rides from './pages/Rides'
 import Challenges from './pages/Challenges'
 import Peer from './pages/Peer'
+import OtpTest from './OtpTest'
 
 export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route element={<ProtectedRoute />}>
+      <Route path="/otp-test" element={<OtpTest />} />
         <Route path="/setup" element={<Setup />} />
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
