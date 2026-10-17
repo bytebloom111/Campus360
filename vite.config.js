@@ -5,4 +5,12 @@
    // https://vite.dev/config/
    export default defineConfig({
      plugins: [react(), tailwindcss()],
+     server: {
+       proxy: {
+         '/api': {
+           target: 'https://capus360-2026.vercel.app',
+           changeOrigin: true,
+         },
+       },
+     },
    })

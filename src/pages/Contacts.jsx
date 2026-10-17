@@ -1,4 +1,4 @@
-import CampusMap from '../components/CampusMap'
+import CampusMapView from '../components/CampusMap'
 import { useState } from 'react'
 import { useNow } from '../lib/useNow'
 import { BUILDINGS, QUICK, STATUS, findPlaces, findFaculty, isOpen, hoursText, ago } from '../lib/contacts'
@@ -17,7 +17,7 @@ function Offices() {
         {QUICK.map((x) => <Button key={x} solid={q.toLowerCase() === x.toLowerCase()} onClick={() => setQ(q.toLowerCase() === x.toLowerCase() ? '' : x)}>{x}</Button>)}
       </div>
       <Card>
-        <CampusMap />
+         <CampusMapView />
       </Card>
       {list.length === 0 && <p className="text-mute">No office matches. Try the Admin office or the Student council.</p>}
       {list.map((p) => {
