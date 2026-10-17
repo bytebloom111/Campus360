@@ -14,6 +14,7 @@ const CELL = {
   lilac: 'bg-[#d8c8fb] text-[#2d1a63] font-semibold',
   gray: 'bg-[#e1e5ed] font-semibold',
 }
+const KINDS = ['Deadline', 'Event', 'Lecture', 'Practical', 'Other']
 const LEGEND = [
   ['bg-[#ffb4b4]', '2 days away'],
   ['bg-[#ffe08f]', '1 week away'],
@@ -27,7 +28,8 @@ export default function Calendar() {
   const [deadlines, setDeadlines] = useDeadlines(session.phone)
   const [monthOffset, setMonthOffset] = useState(0)
   const [sel, setSel] = useState(null) // selected day, as 'YYYY-MM-DD'
-  const [form, setForm] = useState({ title: '', date: '', note: '' })
+  const [adding, setAdding] = useState(false)
+  const [form, setForm] = useState({ title: '', date: '', note: '', kind: 'Deadline' })
   const [err, setErr] = useState('')
 
   const today = startOfToday()
@@ -39,20 +41,26 @@ export default function Calendar() {
 
   const items = [
     ...EVENTS.map((e) => ({ key: toKey(new Date(e.start)), title: e.title, kind: 'Event', note: e.venue })),
-    ...deadlines.map((d) => ({ key: d.date, title: d.title, kind: 'Deadline', note: d.note, id: d.id })),
+    ...deadlines.map((d) => ({ key: d.date, title: d.title, kind: d.kind || 'Deadline', note: d.note, id: d.id })),
   ]
   const ranked = rankEvents(EVENTS, profile.interests || [], now)
   const dayItems = sel ? items.filter((i) => i.key === sel) : []
 
-  function addDeadline() {
+  function openForm() {
+    setForm({ title: '', date: sel || toKey(today), note: '', kind: 'Deadline' })
+    setErr('')
+    setAdding(true)
+  }
+
+  function addItem() {
     if (!form.title.trim()) return setErr('Enter a title.')
     if (!form.date) return setErr('Pick a date.')
     setDeadlines([
       ...deadlines,
-      { id: `d${Date.now()}`, title: form.title.trim(), date: form.date, note: form.note.trim() },
+      { id: `d${Date.now()}`, title: form.title.trim(), date: form.date, note: form.note.trim(), kind: form.kind },
     ])
-    setForm({ title: '', date: '', note: '' })
-    setErr('')
+    setSel(form.date)
+    setAdding(false)
   }
 
   return (
@@ -125,7 +133,7 @@ export default function Calendar() {
             </div>
             {dayItems.length === 0 && <p className="mb-0 mt-2 text-mute">Nothing planned on this day.</p>}
             {dayItems.map((x) => (
-              <div key={x.title + x.kind} className="mt-3 flex items-center justify-between gap-2">
+              <div key={x.id || x.title + x.kind} className="mt-3 flex items-center justify-between gap-2">
                 <div>
                   <b>{x.title}</b>
                   <div className="text-[12.5px] text-mute">{x.note}</div>
@@ -147,34 +155,55 @@ export default function Calendar() {
         )}
       </Card>
 
-      <Card>
-        <h3 className="m-0 mb-1 text-[15px] font-semibold">Add a deadline</h3>
-        <input
-          className={inputClass}
-          placeholder="e.g. Physics assignment"
-          aria-label="Deadline title"
-          value={form.title}
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
-        />
-        <input
-          type="date"
-          className={inputClass}
-          aria-label="Deadline date"
-          value={form.date}
-          onChange={(e) => setForm({ ...form, date: e.target.value })}
-        />
-        <input
-          className={inputClass}
-          placeholder="Note (optional)"
-          aria-label="Deadline note"
-          value={form.note}
-          onChange={(e) => setForm({ ...form, note: e.target.value })}
-        />
-        {err && <p className="mb-0 mt-1"><Badge tone="rose">{err}</Badge></p>}
-        <div className="mt-2">
-          <Button solid onClick={addDeadline}>Add deadline</Button>
+      {adding ? (
+        <Card>
+          <h3 className="m-0 mb-2 text-[15px] font-semibold">Add to calendar</h3>
+          <div className="mb-1 flex flex-wrap gap-2">
+            {KINDS.map((k) => (
+              <Button key={k} solid={form.kind === k} className="!px-3 !py-[6px] text-[12.5px]" onClick={() => setForm({ ...form, kind: k })}>
+                {k}
+              </Button>
+            ))}
+          </div>
+          <input
+            className={inputClass}
+            placeholder={form.kind === 'Lecture' ? 'e.g. Maths lecture, Room 204' : 'e.g. Physics assignment'}
+            aria-label="Title"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+          />
+          <input
+            type="date"
+            className={inputClass}
+            aria-label="Date"
+            value={form.date}
+            onChange={(e) => setForm({ ...form, date: e.target.value })}
+          />
+          <input
+            className={inputClass}
+            placeholder="Note (optional)"
+            aria-label="Note"
+            value={form.note}
+            onChange={(e) => setForm({ ...form, note: e.target.value })}
+          />
+          {err && <p className="mb-0 mt-1"><Badge tone="rose">{err}</Badge></p>}
+          <div className="mt-2 flex gap-2">
+            <Button solid onClick={addItem}>Add</Button>
+            <Button onClick={() => setAdding(false)}>Cancel</Button>
+          </div>
+        </Card>
+      ) : (
+        <div className="flex justify-center">
+          <button
+            type="button"
+            aria-label="Add a deadline, event, lecture or practical"
+            onClick={openForm}
+            className="flex h-14 w-14 items-center justify-center rounded-full border-0 bg-ink text-[30px] font-light leading-none text-white shadow-[0_10px_24px_rgba(22,24,29,0.25)] transition active:scale-95"
+          >
+            +
+          </button>
         </div>
-      </Card>
+      )}
     </>
   )
 }

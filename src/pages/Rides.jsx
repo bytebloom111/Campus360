@@ -4,7 +4,7 @@ import { useNow } from '../lib/useNow'
 import { useRides, rideStatus, fareEach, minsLeft, VEHICLES, SEATS } from '../lib/rides'
 import { Card, Badge, Button, PageHeader, inputClass } from '../components/ui'
 
-const TONE = { Open: 'mint', Full: 'lilac', Expired: 'rose', Cancelled: 'rose' }
+const TONE = { Open: 'mint', Full: 'lilac', Cancelled: 'rose' }
 
 export default function Rides() {
   const { session } = useApp()
@@ -14,6 +14,9 @@ export default function Rides() {
   const [to, setTo] = useState('Kurla station')
   const [v, setV] = useState(VEHICLES[0])
   const [fare, setFare] = useState(120)
+
+  // A ride disappears from the list once its time is up.
+  const visible = rides.filter((r) => now <= r.exp)
 
   function submit() {
     post(to, v, Number(fare))
@@ -44,7 +47,8 @@ export default function Rides() {
           <Button solid onClick={submit}>Post ride</Button>
         </Card>
       )}
-      {rides.map((r) => {
+      {visible.length === 0 && <p className="text-mute">No rides right now. Post one and others can join you.</p>}
+      {visible.map((r) => {
         const st = rideStatus(r, now)
         return (
           <Card key={r.id}>

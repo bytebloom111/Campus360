@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useApp } from '../context/app-context'
 import { useLocalStorage } from '../lib/storage'
 import { MODULES, GROUPS } from '../lib/modules'
-import { DEFAULT_PLANNER, sgpa, gradeStatus } from '../lib/planner'
+import { DEFAULT_PLANNER, DEFAULT_SCALE, sgpa, gradeStatus } from '../lib/planner'
 import { useNow } from '../lib/useNow'
 import { EVENTS, rankEvents, eventState } from '../lib/events'
 import { useRegistrations } from '../lib/useRegistrations'
@@ -24,7 +24,8 @@ const ICON_BG = [
 export default function Home() {
   const { profile, session } = useApp()
   const [plan] = useLocalStorage(`c360.planner.${session.phone}`, DEFAULT_PLANNER)
-  const { subjects, scale, whatIf } = plan
+  const { subjects } = plan
+  const scale = DEFAULT_SCALE
   const now = useNow()
   const [reg, toggleReg] = useRegistrations(session.phone)
   const [deadlines] = useDeadlines(session.phone)
@@ -49,10 +50,8 @@ export default function Home() {
     .slice(0, 2)
     .toUpperCase()
 
-  // Projected SGPA from the planner's what-if scores.
-  const finals = subjects.map((s) =>
-    Math.min(s.finalMax, Math.max(0, whatIf[s.id] ?? Math.round(s.finalMax * 0.6))),
-  )
+  // Projected SGPA, assuming 60% of the marks in every final exam.
+  const finals = subjects.map((s) => Math.round(s.finalMax * 0.6))
   const projected = sgpa(subjects, scale, finals).sgpa
 
   // The subject with the lowest internal-marks percentage needs the most attention.

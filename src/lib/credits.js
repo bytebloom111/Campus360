@@ -5,7 +5,7 @@ export const START_CREDITS = 2
 
 export function usePeer(phone) {
   const [st, setSt] = useLocalStorage(`c360.peer.${phone}`, {
-    credits: START_CREDITS, booked: [], offers: [], wants: [], helping: [],
+    credits: START_CREDITS, booked: [], offers: [], wants: [], helping: [], attended: [], ratings: {},
   })
   return [st, setSt]
 }
