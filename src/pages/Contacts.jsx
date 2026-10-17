@@ -1,3 +1,4 @@
+import CampusMap from '../components/CampusMap'
 import { useState } from 'react'
 import { useNow } from '../lib/useNow'
 import { BUILDINGS, QUICK, STATUS, findPlaces, findFaculty, isOpen, hoursText, ago } from '../lib/contacts'
@@ -16,23 +17,7 @@ function Offices() {
         {QUICK.map((x) => <Button key={x} solid={q.toLowerCase() === x.toLowerCase()} onClick={() => setQ(q.toLowerCase() === x.toLowerCase() ? '' : x)}>{x}</Button>)}
       </div>
       <Card>
-        <svg viewBox="0 0 260 155" className="w-full" role="group" aria-label="Campus map. Tap a building to filter.">
-          {BUILDINGS.map((b) => {
-            const on = bld === b.id
-            return (
-              <g key={b.id} tabIndex={0} role="button" aria-pressed={on} aria-label={b.id}
-                onClick={() => setBld(on ? '' : b.id)}
-                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setBld(on ? '' : b.id)}
-                className="cursor-pointer outline-none focus-visible:[&>rect]:stroke-sky-400">
-                <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="10" className={on ? 'fill-lilac stroke-ink' : 'fill-soft stroke-line'} strokeWidth="1.5" />
-                <text x={b.x + b.w / 2} y={b.y + b.h / 2 + 4} textAnchor="middle" fontSize="11" className="fill-ink">{b.id}</text>
-              </g>
-            )
-          })}
-        </svg>
-        <p className="m-0 mt-1 text-[12px] text-mute">
-          Schematic, not to scale. {bld ? `Showing ${bld}.` : 'Tap a building to filter.'}
-        </p>
+        <CampusMap />
       </Card>
       {list.length === 0 && <p className="text-mute">No office matches. Try the Admin office or the Student council.</p>}
       {list.map((p) => {
