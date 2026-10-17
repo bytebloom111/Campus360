@@ -58,3 +58,5 @@ export default function CampusMap({ selected, height = '60vh' }) {
       markers.current = {}
     }
   }, [])
+  return<div ref={el} style={{ height, width: '100%'}} />
+}
