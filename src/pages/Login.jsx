@@ -65,13 +65,13 @@ export default function Login() {
         ) : (
           <>
             <p className="m-0 text-[12.5px] text-mute">
-              Enter the OTP sent to {phone}. Demo OTP: 1234
+              Enter the OTP sent to {phone}.
             </p>
             <input
               className={inputClass}
               inputMode="numeric"
-              maxLength={4}
-              placeholder="1234"
+              maxLength={6}
+              placeholder="6-digit code"
               value={code}
               onChange={(e) => setCode(e.target.value)}
               aria-label="One-time password"

@@ -5,27 +5,35 @@ import { load, save } from './storage'
 const KEY = 'c360.session'
 const ACCESS_MS = 15 * 60 * 1000 // access token lasts 15 minutes
 const REFRESH_MS = 7 * 24 * 60 * 60 * 1000 // refresh token lasts 7 days
-const DEMO_OTP = '1234'
-
-const wait = (ms = 400) => new Promise((r) => setTimeout(r, ms))
 const token = () => Math.random().toString(36).slice(2) + Date.now().toString(36)
-
 export async function sendOtp(phone) {
-  await wait()
   if (!/^\d{10}$/.test(phone)) throw new Error('Enter a 10-digit mobile number')
+  const res = await fetch('/api/send-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone: '+91' + phone }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.error || data.message || 'Could not send OTP')
   return { ok: true }
 }
 
 export async function verifyOtp(phone, code) {
-  await wait()
-  if (code !== DEMO_OTP) throw new Error('Wrong OTP. Use 1234 in the demo')
+  const res = await fetch('/api/verify-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone: '+91' + phone, code }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.error || data.message || 'Wrong OTP')
   const now = Date.now()
   const session = {
     phone,
-    accessToken: token(),
-    refreshToken: token(),
-    accessExp: now + ACCESS_MS,
+    accessToken: data.access_token,
+    refreshToken: data.refresh_token,
+    accessExp: data.expires_at ? new Date(data.expires_at).getTime() : now + ACCESS_MS,
     refreshExp: now + REFRESH_MS,
+    identityId: data.identity_id,
   }
   save(KEY, session)
   return session
