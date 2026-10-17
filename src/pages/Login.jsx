@@ -93,9 +93,6 @@ export default function Login() {
           </>
         )}
       </Card>
-      <p className="text-[12.5px] text-mute">
-        Demo mode: login is simulated. MiniMoth phone OTP connects in a later batch.
-      </p>
     </main>
   )
 }
